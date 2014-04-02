@@ -1,0 +1,5 @@
+name = Quizz Question UI
+description = .
+package = Happy
+core = 7.x
+dependencies[] = quizz_question

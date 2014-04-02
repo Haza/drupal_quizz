@@ -1,0 +1,90 @@
+<?php
+
+/**
+ * @file
+ * todo
+ */
+
+/**
+ * Implements hook_ctools_plugin_type().
+ */
+function quizz_question_ctools_plugin_type() {
+  return array(
+    'question_type' => array(
+      'use hooks' => FALSE,
+      'classes' => array('class'),
+    ),
+  );
+}
+
+/**
+ * Implements hook_ctools_plugin_directory().
+ */
+function quizz_question_ctools_plugin_directory($module, $plugin) {
+  if ($module == 'quizz_question') {
+    return 'includes/plugins/' . $plugin;
+  }
+}
+
+/**
+ * Implements hook_entity_info().
+ */
+function quizz_question_entity_info() {
+  $return = array(
+    'quizz_question' => array(
+      'label' => t('Quizz Question'),
+      'controller class' => 'QuizzQuestionEntityController',
+      'base table' => 'quizz_question',
+      'revision table' => 'quizz_question_revision',
+      'module' => 'quizz_question',
+      'bundle plugin' => array(
+        'plugin type' => 'question_type',
+      ),
+      'fieldable' => TRUE,
+      'entity keys' => array(
+        'id' => 'quizz_question_id',
+        'bundle' => 'type',
+        'revision' => 'revision_id',
+      ),
+      'view modes' => array(
+        'full' => array(
+          'label' => t('Full'),
+          'custom settings' => TRUE,
+        ),
+      ),
+      'access callback' => 'quizz_access',
+    ),
+  );
+  foreach (quizz_question_get_type_plugins() as $plugin_name => $plugin) {
+    $return['quizz_question']['bundles'][$plugin_name] = array(
+      'label' => $plugin['title'],
+    );
+  }
+  return $return;
+}
+
+function quizz_access() {
+  return TRUE;
+}
+/**
+ * Get the available type plugins.
+ */
+function quizz_question_get_type_plugins() {
+  ctools_include('plugins');
+  $plugins = ctools_get_plugins('quizz_question', 'question_type');
+  foreach ($plugins as $key => $plugin) {
+    if (!class_exists($plugin['class'])) {
+      // Invalid class specified.
+      unset($plugins[$key]);
+      continue;
+    }
+    $r = new ReflectionClass($plugin['class']);
+    if (!$r->hasMethod('isValid') || !call_user_func(array($plugin['class'], 'isValid'))) {
+      // Invalid plugin specified.
+      unset($plugins[$key]);
+      continue;
+    }
+  }
+  uasort($plugins, 'ctools_plugin_sort');
+  return $plugins;
+}

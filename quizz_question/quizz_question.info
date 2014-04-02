@@ -1,0 +1,11 @@
+name = Quizz Question
+description = .
+package = Happy
+core = 7.x
+dependencies[] = entity
+dependencies[] = ctools
+dependencies[] = entity_bundle_plugin
+
+files[] = quizz_question.info.inc
+files[] = includes/quizz_question.controller.inc
+files[] = includes/plugins/question_type/base.inc

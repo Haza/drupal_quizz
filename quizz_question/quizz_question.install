@@ -1,0 +1,91 @@
+<?php
+
+/**
+ * Implements hook_schema().
+ */
+function quizz_question_schema() {
+  $schema['quizz_question'] = array(
+    'description' => 'The base table for the quizz_question entity type.',
+    'fields' => array(
+      'quizz_question_id' => array(
+        'description' => 'The primary identifier for a question.',
+        'type' => 'serial',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+      ),
+      // Defaults to NULL in order to avoid a brief period of potential
+      // deadlocks on the index.
+      'revision_id' => array(
+        'description' => 'The current {quizz_question_revision}.revision_id identifier.',
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => FALSE,
+        'default' => NULL,
+      ),
+      'type' => array(
+        'description' => 'The question type.',
+        'type' => 'varchar',
+        'length' => 64,
+        'not null' => TRUE,
+      ),
+      'status' => array(
+        'description' => 'The question status.',
+        'type' => 'int',
+        'size' => 'tiny',
+        'not null' => TRUE,
+        'default' => 0,
+      ),
+    ),
+    'primary key' => array('quizz_question_id'),
+    'indexes' => array(
+      'type' => array('type'),
+      'status' => array('status'),
+    ),
+    'unique keys' => array(
+      'revision_id' => array('revision_id'),
+    ),
+    'foreign keys' => array(
+      'current_revision' => array(
+        'table' => 'quizz_question_revision',
+        'columns'=> array('revision_id' => 'revision_id'),
+      ),
+    ),
+  );
+  $schema['quizz_question_revision'] = array(
+    'description' => 'Stores information about each saved revision of a {quizz_question}.',
+    'fields' => array(
+      'quizz_question_id' => array(
+        'description' => 'The {quizz_question}.quizz_question_id of the question type this revision belongs to.',
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'default' => 0,
+      ),
+      'revision_id' => array(
+        'description' => 'The primary identifier for this revision.',
+        'type' => 'serial',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+      ),
+      'status' => array(
+        'description' => 'The quizz question status for this revision.',
+        'type' => 'int',
+        'size' => 'tiny',
+        'not null' => TRUE,
+        'default' => 0,
+      ),
+    ),
+    'primary key' => array('revision_id'),
+    'indexes' => array(
+      'quizz_question_id' => array('quizz_question_id'),
+    ),
+    'foreign keys' => array(
+      'quizz_question' => array(
+        'table' => 'quizz_question',
+        'columns' => array('quizz_question_id' => 'quizz_question_id'),
+      ),
+    ),
+  );
+
+  return $schema;
+}

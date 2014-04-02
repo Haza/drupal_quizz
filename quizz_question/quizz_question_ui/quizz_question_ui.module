@@ -1,0 +1,33 @@
+<?php
+
+/**
+ * Implements hook_menu().
+ */
+function quizz_question_ui_menu() {
+  $items = array();
+
+  $items['admin/quizz/config/question'] = array(
+    'title' => 'Question settings',
+    'description' => 'Configure Question settings.',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('quizz_question_ui_settings_form'),
+    'access arguments' => array('administer quizz'),
+    'file' => 'quizz_question_ui.admin.inc',
+  );
+
+  $items['admin/quizz/config/question/list'] = array(
+    'title' => 'Question types',
+    'description' => 'View Question types.',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('quizz_question_ui_types_settings_form'),
+    'access arguments' => array('administer quizz'),
+    'file' => 'quizz_question_ui.admin.inc',
+  );
+
+  $items['admin/quizz/config/question/general'] = array(
+    'title' => 'General',
+    'type' => MENU_DEFAULT_LOCAL_TASK,
+    'weight' => -20,
+  );
+  return $items;
+}
